@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parth Badani - Customer Success Leader</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --secondary: #22c55e;
+            --accent: #f59e0b;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dynamic-title {
+            font-size: 18px;
+            color: var(--primary);
+            font-weight: 600;
+            opacity: 0;
+            animation: fadeInOut 3s infinite;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 60px;
+            margin-bottom: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .hero-text h2 {
+            font-size: 24px;
+            color: var(--dark);
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .hero-text p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 197, 94, 0.1));
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat:hover {
+            transform: translateY(-5px) scale(1.05);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .hero-visual {
+            position: relative;
+        }
+
+        .profile-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 40px;
+            border-radius: 20px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
+            transform: rotate(-2deg);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-card:hover {
+            transform: rotate(0deg) scale(1.05);
+        }
+
+        .avatar {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+
+        .interests {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .interest-tag {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .interest-tag:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* Sections */
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 60px;
+            margin-bottom: 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+            display: none;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 36px;
+            margin-bottom: 40px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .project-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(34, 197, 94, 0.05));
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient);
+        }
+
+        .project-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .project-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .project-description {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .project-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tool-tag {
+            background: var(--primary);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+
+        .project-link {
+            display: inline-block;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .project-link:hover {
+            transform: translateX(5px);
+        }
+
+        /* Education & Experience */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--gradient);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -35px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        .timeline-content {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(34, 197, 94, 0.05));
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .timeline-date {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .timeline-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .timeline-company {
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .timeline-description {
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        /* Contact Section */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .contact-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 197, 94, 0.1));
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .contact-icon {
+            font-size: 36px;
+            margin-bottom: 15px;
+        }
+
+        .contact-card a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Chatbot */
+        .chatbot-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chatbot-toggle {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .chatbot-window {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 380px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .chatbot-window.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: var(--gradient);
+            color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-message {
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 80%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .chat-message.bot {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 197, 94, 0.1));
+            align-self: flex-start;
+        }
+
+        .chat-message.user {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+        }
+
+        .chat-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .chat-option {
+            background: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .chat-option:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .chatbot-input {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chatbot-input input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 25px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chatbot-input input:focus {
+            border-color: var(--primary);
+        }
+
+        .chatbot-input button {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .chatbot-input button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+            
+            .chatbot-window {
+                width: calc(100vw - 40px);
+                right: -10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Navigation -->
+        <nav>
+            <div class="nav-container">
+                <div class="logo">PB</div>
+                <div class="dynamic-title" id="dynamicTitle">Customer Success Manager</div>
+                <div class="nav-links">
+                    <a href="#" class="nav-link active" data-page="home">About Me</a>
+                    <a href="#" class="nav-link" data-page="education">Education</a>
+                    <a href="#" class="nav-link" data-page="experience">Experience</a>
+                    <a href="#" class="nav-link" data-page="projects">Projects</a>
+                    <a href="#" class="nav-link" data-page="resume">Resume</a>
+                    <a href="#" class="nav-link" data-page="contact">Contact</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Home/About Section -->
+        <div id="home" class="hero section active">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Parth Badani</h1>
+                    <h2>Building Bridges Between Products & People</h2>
+                    <p>
+                        Customer Success leader with 4+ years scaling SaaS from SMB to Enterprise. 
+                        I manage accounts but beyond that, I architect outcomes. From a founding CS member 
+                        to driving 115% NRR, reducing churn by 5.1%, attaining 130% of my quotas every quarter on an average and winning the President's Club twice in a row to leading onsite customer experience programs, I blend data rigor with human empathy to transform 
+                        customer relationships into strategic partnerships. 
+                    </p>
+                    <p>
+                        Currently having graduated with an MS in Business Analytics at Babson, I am working at a conversational AI startup, Vosyn AI, where I work with the product teams to relay customer feedback into the product roadmap and iterate towards product market fit. I also usually vibe-code and build custom solutions to ensure I'm always prepared with a workaround for clients. Whether it's displacing competitors, expanding share of wallet, 
+                        or building adoption playbooks, I thrive where technology meets strategy for client advocacy.
+                    </p>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-number">115%</div>
+                            <div class="stat-label">Net Revenue Retention</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">$4M+</div>
+                            <div class="stat-label">ARR Managed</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">2x</div>
+                            <div class="stat-label">President's Club</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="profile-card">
+                        <div class="avatar">
+                            <img src="parth-photo.jpg" alt="Parth Badani" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        </div>
+                        <h3>Beyond the Metrics</h3>
+                        <p>Former athlete turned tech enthusiast</p>
+                        <div class="interests">
+                            <span class="interest-tag">⚽ Soccer</span>
+                            <span class="interest-tag">🥊 Boxing</span>
+                            <span class="interest-tag">💃 Dancing</span>
+                            <span class="interest-tag">🥾 Hiking</span>
+                            <span class="interest-tag">🍺 Craft Beer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Education Section -->
+        <div id="education" class="section">
+            <h2 class="section-title">Education</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Aug 2023 - Dec 2024</div>
+                        <div class="timeline-title">MS, Business Analytics</div>
+                        <div class="timeline-company">Babson College, Boston, MA</div>
+                        <div class="timeline-description">
+                            GPA: 3.4/4.0 | Focus on data-driven decision making, predictive analytics, 
+                            and building AI-powered solutions for business problems. Led capstone project 
+                            building conversational AI for PE consulting firm.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Experience Section -->
+        <div id="experience" class="section">
+            <h2 class="section-title">Experience</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Aug 2024 - Present</div>
+                        <div class="timeline-title">Customer Success Intern</div>
+                        <div class="timeline-company">Vosyn AI, New York, NY</div>
+                        <div class="timeline-description">
+                            Driving product-market fit for conversational AI platform. Improved trial-to-paid 
+                            conversion by 30%, designed automated feedback frameworks, achieved 92% CSAT during beta.
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Jan 2023 - May 2023</div>
+                        <div class="timeline-title">Senior Customer Success Executive</div>
+                        <div class="timeline-company">SurveySparrow, Remote</div>
+                        <div class="timeline-description">
+                            Managed 35 enterprise accounts across ANZ & APAC. Launched QBR campaigns for 
+                            high-risk accounts, drove $200K in upselling through reseller partnerships.
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Jan 2020 - Aug 2022</div>
+                        <div class="timeline-title">Customer Success Executive</div>
+                        <div class="timeline-company">Freshworks, Remote</div>
+                        <div class="timeline-description">
+                            Oversaw $4M+ ARR portfolio of 100+ accounts. Exceeded targets with 130%+ attainment, 
+                            2x Presidents Club winner. Built Field Service Management module driving $540K in cross-sells.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Section -->
+        <div id="projects" class="section">
+            <h2 class="section-title">Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-icon">📊</div>
+                    <h3 class="project-title">SaaS Revenue & Churn Forecasting</h3>
+                    <p class="project-description">
+                        Simulated 200K CRM records to build predictive churn models and revenue forecasting 
+                        dashboards. Identified churn concentration in APAC SMBs and pipeline velocity gaps.
+                    </p>
+                    <div class="project-tools">
+                        <span class="tool-tag">Python</span>
+                        <span class="tool-tag">Power BI</span>
+                        <span class="tool-tag">Excel</span>
+                        <span class="tool-tag">SQL</span>
+                    </div>
+                    <a href="https://docs.google.com/presentation/d/19MlSPCCruEI5B4UvP2-gfNpNRDnZpPPk/edit?slide=id.p5#slide=id.p5" 
+                       target="_blank" class="project-link">View Project →</a>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">🎯</div>
+                    <h3 class="project-title">Lead Scoring Model</h3>
+                    <p class="project-description">
+                        Developed ML-based lead scoring system to prioritize high-value prospects. 
+                        Increased sales efficiency by 35% through predictive qualification.
+                    </p>
+                    <div class="project-tools">
+                        <span class="tool-tag">Machine Learning</span>
+                        <span class="tool-tag">Python</span>
+                        <span class="tool-tag">Salesforce</span>
+                    </div>
+                    <a href="https://docs.google.com/presentation/d/1yDqT68q4N0bytk94ASnHoZQLYkbaQN9l/edit?slide=id.p1#slide=id.p1" 
+                       target="_blank" class="project-link">View Project →</a>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">🔄</div>
+                    <h3 class="project-title">CRM Pipeline Analysis</h3>
+                    <p class="project-description">
+                        Built real-time pipeline analytics using Coefficient.io and HubSpot integration. 
+                        Automated revenue forecasting and identified bottlenecks in sales velocity.
+                    </p>
+                    <div class="project-tools">
+                        <span class="tool-tag">Coefficient.io</span>
+                        <span class="tool-tag">HubSpot</span>
+                        <span class="tool-tag">Analytics</span>
+                    </div>
+                    <a href="https://www.linkedin.com/posts/parthbadani96_coefficient-revops-salesops-activity-7344555396637872128-nmcc" 
+                       target="_blank" class="project-link">View Project →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resume Section -->
+        <div id="resume" class="section">
+            <h2 class="section-title">Resume</h2>
+            <div style="text-align: center; padding: 40px;">
+                <p style="font-size: 18px; margin-bottom: 30px;">
+                    Download my full resume to see detailed experience, achievements, and skills.
+                </p>
+                <a href="PSB96-CSM.pdf" style="display: inline-block; background: var(--gradient); color: white; 
+                   padding: 15px 40px; border-radius: 30px; text-decoration: none; font-weight: 600;
+                   transition: transform 0.3s ease;" 
+                   onmouseover="this.style.transform='scale(1.05)'"
+                   onmouseout="this.style.transform='scale(1)'">
+                    Download Resume (PDF)
+                </a>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div id="contact" class="section">
+            <h2 class="section-title">Let's Connect</h2>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">📧</div>
+                    <h3>Email</h3>
+                    <a href="mailto:parthbadani96@gmail.com">parthbadani96@gmail.com</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">💼</div>
+                    <h3>LinkedIn</h3>
+                    <a href="https://www.linkedin.com/in/parthbadani96" target="_blank">linkedin.com/in/parthbadani96</a>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">🔧</div>
+                    <h3>GitHub</h3>
+                    <a href="https://github.com/ParthBadani96" target="_blank">github.com/ParthBadani96</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <div class="chatbot-container">
+        <div class="chatbot-toggle" onclick="toggleChatbot()">💬</div>
+        <div class="chatbot-window" id="chatbotWindow">
+            <div class="chatbot-header">
+                <span>Chat with Parth's AI</span>
+                <button onclick="toggleChatbot()" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;">✖</button>
+            </div>
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-message bot">👋 Do you want to know more about Parth?</div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" id="chatInput" placeholder="Type your message..." />
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Chatbot toggle
+        function toggleChatbot() {
+            const chatbotWindow = document.getElementById("chatbotWindow");
+            chatbotWindow.classList.toggle("active");
+        }
+
+        // Navigation switching
+        document.querySelectorAll(".nav-link").forEach(link => {
+            link.addEventListener("click", function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute("data-page");
+
+                // Hide all sections
+                document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+
+                // Remove active from all nav links
+                document.querySelectorAll(".nav-link").forEach(nav => nav.classList.remove("active"));
+
+                // Show the selected section
+                document.getElementById(pageId).classList.add("active");
+
+                // Highlight active nav
+                this.classList.add("active");
+            });
+        });
+
+        // Track API usage
+        let apiCallsToday = parseInt(localStorage.getItem('apiCalls') || '0');
+        let lastResetDate = localStorage.getItem('lastReset') || new Date().toDateString();
+
+        // Reset counter daily
+        if (new Date().toDateString() !== lastResetDate) {
+            apiCallsToday = 0;
+            localStorage.setItem('lastReset', new Date().toDateString());
+        }
+
+        // Local response function
+        function getLocalResponse(msg) {
+            let cleaned = msg.toLowerCase()
+                .replace(/tell me about|his|her|the|please|can you|give me|more about/g, "")
+                .trim();
+
+            if (/hi|hello|hey/i.test(cleaned)) {
+                return "👋 Hi! I'm Parth's AI. You can ask me about his education, experience, projects, wins, resume, contact info, skills, or hobbies.";
+            }
+            else if (/education|school|college|study|degree|babson/i.test(cleaned)) {
+                return "🎓 Parth has an MS in Business Analytics from Babson (2023-2024, GPA 3.4). Led capstone building conversational AI for PE firm.";
+            }
+            else if (/vosyn|intern|current|now/i.test(cleaned)) {
+                return "💡 At Vosyn AI (2024–present), Parth improved trial-to-paid conversion by 30%, designed automated adoption frameworks, achieved 92% CSAT.";
+            }
+            else if (/freshworks|experience|csm|career|president|club/i.test(cleaned)) {
+                return "📈 At Freshworks (2020-2022): Managed $4M+ ARR, 2x Presidents Club, built FSM module ($540K cross-sells), expanded Thirty Madison $10K→$132K.";
+            }
+            else if (/surveysparrow/i.test(cleaned)) {
+                return "📊 At SurveySparrow (2023), Parth managed 35 enterprise accounts, ran QBRs for high-risk accounts, drove $200K upsell via partnerships.";
+            }
+            else if (/win|churn|retention|expansion|deal|displace/i.test(cleaned)) {
+                return "🏆 Key wins: Saved $40K healthcare client from churn → grew to $125K. Expanded Thirty Madison from $10K→$132K in 5 months. Consistently 115%+ NRR.";
+            }
+            else if (/project|forecast|lead|pipeline|churn/i.test(cleaned)) {
+                return "📂 Projects:\n1) Churn Forecasting (Python + Power BI)\n2) Lead Scoring Model (ML + Salesforce)\n3) CRM Pipeline Analysis (HubSpot + Coefficient.io)";
+            }
+            else if (/resume|cv|download/i.test(cleaned)) {
+                return "📄 You can download Parth's full resume from the Resume tab above.";
+            }
+            else if (/contact|email|linkedin|github|phone/i.test(cleaned)) {
+                return "📬 Reach Parth at:\n- Email: parthbadani96@gmail.com\n- LinkedIn: linkedin.com/in/parthbadani96\n- GitHub: github.com/ParthBadani96";
+            }
+            else if (/skills|tools|stack|tech|technology/i.test(cleaned)) {
+                return "🛠 Tools: Salesforce, HubSpot, Gainsight, Freshdesk, SQL, Snowflake, Power BI, Tableau, Python, Zapier, Notion.";
+            }
+            else if (/soccer|football|boxing|dance|hike|beer|hobbies|outside/i.test(cleaned)) {
+                return "⚽ Outside work: Parth plays soccer, boxes, dances, hikes, and enjoys craft beer 🍺.";
+            }
+            else {
+                return "🤖 I can help you learn about Parth's education, experience, projects, wins, or skills. What would you like to know?";
+            }
+        }
+
+        // Send message function
+        async function sendMessage() {
+    const input = document.getElementById("chatInput");
+    let msg = input.value.trim();
+    if (!msg) return;
+
+    const messages = document.getElementById("chatbotMessages");
+
+    // User message
+    const userDiv = document.createElement("div");
+    userDiv.className = "chat-message user";
+    userDiv.textContent = msg;
+    messages.appendChild(userDiv);
+
+    // Bot response
+    const botDiv = document.createElement("div");
+    botDiv.className = "chat-message bot";
+    
+    // Check if running locally
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isLocal) {
+        // LOCAL TESTING - Just use pattern matching
+        botDiv.textContent = getLocalResponse(msg) + " [LOCAL MODE - Deploy to Netlify for AI]";
+        messages.appendChild(botDiv);
+    } else {
+        // DEPLOYED VERSION - Try API
+        const useAPI = apiCallsToday < 50;
+        
+        if (useAPI) {
+            botDiv.textContent = "🤔 Thinking...";
+            messages.appendChild(botDiv);
+            
+            try {
+                const response = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    botDiv.textContent = data.response;
+                    apiCallsToday++;
+                    localStorage.setItem('apiCalls', apiCallsToday.toString());
+                } else {
+                    throw new Error('Function returned: ' + response.status);
+                }
+            } catch (error) {
+                botDiv.textContent = getLocalResponse(msg) + " [API Error - Check Netlify Functions]";
+                console.error('API Error:', error);
+            }
+        } else {
+            botDiv.textContent = getLocalResponse(msg) + " [API Limit Reached]";
+        }
+    }
+    
+    input.value = "";
+    messages.scrollTop = messages.scrollHeight;
+}
+        // Allow Enter key to send message
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Dynamic title rotation
+        const titles = [
+            "Customer Success Manager",
+            "GTM Operations", 
+            "Campaign Specialist",
+            "Sports Enthusiast",
+            "Dancer"
+        ];
+        let index = 0;
+        const titleEl = document.getElementById("dynamicTitle");
+        
+        setInterval(() => {
+            index = (index + 1) % titles.length;
+            titleEl.textContent = titles[index];
+        }, 3000);
+
+        // Auto-open chatbot after 2 seconds
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                toggleChatbot();
+            }, 2000);
+        });
+    </script>      
+</body>
+</html>

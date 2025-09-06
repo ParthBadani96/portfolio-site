@@ -1,0 +1,8 @@
+{
+  "name": "parth-portfolio",
+  "version": "1.0.0",
+  "description": "Portfolio with AI chatbot",
+  "scripts": {
+    "build": "echo 'No build needed'"
+  }
+}
