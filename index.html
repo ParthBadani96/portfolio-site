@@ -657,25 +657,114 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .hero-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .stats {
-                flex-direction: column;
-            }
-            
-            .chatbot-window {
-                width: calc(100vw - 40px);
-                right: -10px;
-            }
-        }
+        /* Responsive - REPLACE the existing @media section */
+@media (max-width: 768px) {
+    .main-container {
+        padding: 10px;
+    }
+    
+    nav {
+        padding: 15px 20px;
+    }
+    
+    .nav-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .nav-links {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .nav-links a {
+        font-size: 14px;
+        padding: 5px 10px;
+    }
+    
+    .hero {
+        padding: 30px 20px;
+    }
+    
+    .hero-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .hero-text h1 {
+        font-size: 32px;
+    }
+    
+    .hero-text h2 {
+        font-size: 18px;
+    }
+    
+    .hero-text p {
+        font-size: 16px;
+    }
+    
+    .stats {
+        flex-direction: row;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .stat {
+        flex: 1;
+        min-width: 100px;
+        padding: 15px;
+    }
+    
+    .stat-number {
+        font-size: 24px;
+    }
+    
+    .profile-card {
+        padding: 30px;
+        transform: rotate(0deg);
+    }
+    
+    .section {
+        padding: 30px 20px;
+    }
+    
+    .section-title {
+        font-size: 28px;
+    }
+    
+    .projects-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chatbot-window {
+        width: calc(100vw - 20px);
+        height: 450px;
+        right: 10px;
+        left: 10px;
+        bottom: 70px;
+    }
+    
+    .chatbot-toggle {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+    
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-text h1 {
+        font-size: 28px;
+    }
+    
+    .dynamic-title {
+        font-size: 14px;
+    }
+}
     </style>
 </head>
 <body>
@@ -692,6 +781,8 @@
                     <a href="#" class="nav-link" data-page="projects">Projects</a>
                     <a href="#" class="nav-link" data-page="resume">Resume</a>
                     <a href="#" class="nav-link" data-page="contact">Contact</a>
+                    <!-- Add this after your other nav links -->
+                    <a href="analytics.html" class="nav-link" style="display: none;" id="analytics-link">Analytics</a>
                 </div>
             </div>
         </nav>
@@ -1090,5 +1181,82 @@
             }, 2000);
         });
     </script>      
+    <script>
+// Visitor tracking
+(async function trackVisitor() {
+    try {
+        // Get visitor info
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        
+        // Get or create visitor ID
+        let visitorId = localStorage.getItem('visitorId');
+        if (!visitorId) {
+            visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('visitorId', visitorId);
+        }
+        
+        // Load existing analytics
+        let analytics = JSON.parse(localStorage.getItem('portfolioAnalytics') || '{}');
+        
+        // Initialize if needed
+        if (!analytics.visitors) analytics.visitors = [];
+        if (!analytics.companies) analytics.companies = {};
+        if (!analytics.uniqueVisitors) analytics.uniqueVisitors = 0;
+        if (!analytics.totalVisits) analytics.totalVisits = 0;
+        if (!analytics.todayVisits) analytics.todayVisits = 0;
+        
+        // Track visit
+        const now = new Date();
+        const today = now.toDateString();
+        
+        if (analytics.lastVisitDate !== today) {
+            analytics.todayVisits = 0;
+            analytics.lastVisitDate = today;
+        }
+        
+        // Detect company (simplified - in production use Clearbit or similar)
+        const company = data.org || 'Unknown';
+        const location = `${data.city || 'Unknown'}, ${data.country_name || 'Unknown'}`;
+        
+        // Add visitor
+        analytics.visitors.push({
+            id: visitorId,
+            timestamp: now.toISOString(),
+            company: company,
+            location: location,
+            ip: data.ip,
+            pageViews: 1,
+            duration: '< 1 min'
+        });
+        
+        // Update counts
+        analytics.totalVisits++;
+        analytics.todayVisits++;
+        if (!analytics.uniqueIds) analytics.uniqueIds = new Set();
+        analytics.uniqueIds.add(visitorId);
+        analytics.uniqueVisitors = analytics.uniqueIds.size;
+        
+        if (company !== 'Unknown') {
+            analytics.companies[company] = (analytics.companies[company] || 0) + 1;
+        }
+        
+        // Keep only last 100 visitors
+        if (analytics.visitors.length > 100) {
+            analytics.visitors = analytics.visitors.slice(-100);
+        }
+        
+        // Save
+        localStorage.setItem('portfolioAnalytics', JSON.stringify(analytics));
+        
+    } catch (error) {
+        console.log('Analytics tracking failed:', error);
+    }
+})();
+// Show analytics link only for admin (you)
+if (window.location.search.includes('admin=true')) {
+    document.getElementById('analytics-link').style.display = 'block';
+}
+</script>
 </body>
 </html>

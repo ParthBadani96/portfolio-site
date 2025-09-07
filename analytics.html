@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visitor Analytics - Parth Badani</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 197, 94, 0.1));
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #6366f1;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            margin-top: 10px;
+        }
+        
+        .visitors-table {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #f8fafc;
+            padding: 12px;
+            text-align: left;
+            color: #64748b;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 12px;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .company-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+        }
+        
+        .unknown {
+            background: #94a3b8;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <a href="index.html" class="back-link">← Back to Portfolio</a>
+        <h1>Visitor Analytics Dashboard</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalVisits">0</div>
+                <div class="stat-label">Total Visits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="uniqueVisitors">0</div>
+                <div class="stat-label">Unique Visitors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayVisits">0</div>
+                <div class="stat-label">Today's Visits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="companies">0</div>
+                <div class="stat-label">Companies Identified</div>
+            </div>
+        </div>
+        
+        <div class="visitors-table">
+            <h2 style="margin-bottom: 20px;">Recent Visitors</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Company</th>
+                        <th>Location</th>
+                        <th>Page Views</th>
+                        <th>Duration</th>
+                    </tr>
+                </thead>
+                <tbody id="visitorsList">
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Load analytics data from localStorage
+        function loadAnalytics() {
+            const analytics = JSON.parse(localStorage.getItem('portfolioAnalytics') || '{}');
+            
+            document.getElementById('totalVisits').textContent = analytics.totalVisits || 0;
+            document.getElementById('uniqueVisitors').textContent = analytics.uniqueVisitors || 0;
+            document.getElementById('todayVisits').textContent = analytics.todayVisits || 0;
+            document.getElementById('companies').textContent = Object.keys(analytics.companies || {}).length;
+            
+            // Load visitor list
+            const visitors = analytics.visitors || [];
+            const tbody = document.getElementById('visitorsList');
+            tbody.innerHTML = '';
+            
+            visitors.slice(-20).reverse().forEach(visitor => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${new Date(visitor.timestamp).toLocaleString()}</td>
+                    <td><span class="company-badge ${visitor.company === 'Unknown' ? 'unknown' : ''}">${visitor.company}</span></td>
+                    <td>${visitor.location}</td>
+                    <td>${visitor.pageViews}</td>
+                    <td>${visitor.duration}</td>
+                `;
+            });
+        }
+        
+        // Refresh every 5 seconds
+        loadAnalytics();
+        setInterval(loadAnalytics, 5000);
+    </script>
+</body>
+</html>
