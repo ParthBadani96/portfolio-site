@@ -809,6 +809,7 @@
                     <a href="#" class="nav-link" data-page="resume">Resume</a>
                     <a href="#" class="nav-link" data-page="contact">Contact</a>
                     <a href="analytics.html" class="nav-link" style="display: none;" id="analytics-link">Analytics</a>
+                    <a href="admin.html" class="nav-link" style="display: none;" id="admin-panel-link">Knowledge Admin</a>
                 </div>
             </div>
         </nav>
@@ -1073,49 +1074,35 @@
         }
 
         // Local response function
-        function getLocalResponse(msg) {
-            let cleaned = msg.toLowerCase()
-                .replace(/tell me about|his|her|the|please|can you|give me|more about/g, "")
-                .trim();
-
-            if (/hi|hello|hey/i.test(cleaned)) {
-                return "👋 Hi! I'm Parth's AI. You can ask me about his education, experience, projects, wins, resume, contact info, skills, or hobbies.";
-            }
-            else if (/education|school|college|study|degree|babson/i.test(cleaned)) {
-                return "🎓 Parth has an MS in Business Analytics from Babson (2023-2024, GPA 3.4). Led capstone building conversational AI for PE firm.";
-            }
-            else if (/vosyn|intern|current|now/i.test(cleaned)) {
-                return "💡 At Vosyn AI (2024–present), Parth improved trial-to-paid conversion by 30%, designed automated adoption frameworks, achieved 92% CSAT.";
-            }
-            else if (/freshworks|experience|csm|career|president|club/i.test(cleaned)) {
-                return "📈 At Freshworks (2020-2022): Managed $4M+ ARR, 2x Presidents Club, built FSM module ($540K cross-sells), expanded Thirty Madison $10K→$132K.";
-            }
-            else if (/surveysparrow/i.test(cleaned)) {
-                return "📊 At SurveySparrow (2023), Parth managed 35 enterprise accounts, ran QBRs for high-risk accounts, drove $200K upsell via partnerships.";
-            }
-            else if (/win|churn|retention|expansion|deal|displace/i.test(cleaned)) {
-                return "🏆 Key wins: Saved $40K healthcare client from churn → grew to $125K. Expanded Thirty Madison from $10K→$132K in 5 months. Consistently 115%+ NRR.";
-            }
-            else if (/project|forecast|lead|pipeline|churn/i.test(cleaned)) {
-                return "📂 Projects:\n1) Churn Forecasting (Python + Power BI)\n2) Lead Scoring Model (ML + Salesforce)\n3) CRM Pipeline Analysis (HubSpot + Coefficient.io)";
-            }
-            else if (/resume|cv|download/i.test(cleaned)) {
-                return "📄 You can download Parth's full resume from the Resume tab above.";
-            }
-            else if (/contact|email|linkedin|github|phone/i.test(cleaned)) {
-                return "📬 Reach Parth at:\n- Email: parthbadani96@gmail.com\n- LinkedIn: linkedin.com/in/parthbadani96\n- GitHub: github.com/ParthBadani96";
-            }
-            else if (/skills|tools|stack|tech|technology/i.test(cleaned)) {
-                return "🛠 Tools: Salesforce, HubSpot, Gainsight, Freshdesk, SQL, Snowflake, Power BI, Tableau, Python, Zapier, Notion.";
-            }
-            else if (/soccer|football|boxing|dance|hike|beer|hobbies|outside/i.test(cleaned)) {
-                return "⚽ Outside work: Parth plays soccer, boxes, dances, hikes, and enjoys craft beer 🍺.";
-            }
-            else {
-                return "🤖 I can help you learn about Parth's education, experience, projects, wins, or skills. What would you like to know?";
-            }
+        // Enhanced function that checks custom knowledge first
+function getLocalResponse(msg) {
+    // First check custom knowledge
+    const customKnowledge = JSON.parse(localStorage.getItem('customKnowledge') || '{}');
+    
+    // Check if any custom knowledge matches
+    for (const [id, item] of Object.entries(customKnowledge)) {
+        const matchFound = item.keywords.some(keyword => 
+            msg.toLowerCase().includes(keyword.toLowerCase())
+        );
+        
+        if (matchFound) {
+            return `💡 ${item.content}`;
         }
+    }
+    
+    // Fallback to existing pattern matching
+    let cleaned = msg.toLowerCase()
+        .replace(/tell me about|his|her|the|please|can you|give me|more about/g, "")
+        .trim();
 
+    if (/hi|hello|hey/i.test(cleaned)) {
+        return "👋 Hi! I'm Parth's AI. You can ask me about his education, experience, projects, wins, resume, contact info, skills, or hobbies.";
+    }
+    // ... rest of your existing responses
+    else {
+        return "🤖 I can help you learn about Parth's education, experience, projects, wins, or skills. What would you like to know?";
+    }
+}
         // Send message function
         async function sendMessage() {
             const input = document.getElementById("chatInput");
@@ -1278,9 +1265,11 @@
         })();
 
         // Show analytics link only for admin
+        // Show admin links only for you
         if (window.location.search.includes('admin=true')) {
             document.getElementById('analytics-link').style.display = 'block';
-        }
+            document.getElementById('admin-panel-link').style.display = 'block';
+}
     </script>
 </body>
 </html>
