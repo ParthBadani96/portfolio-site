@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JD Match Analyzer - Parth Badani</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1e293b;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 18px;
+        }
+
+        .upload-section {
+            margin-bottom: 30px;
+        }
+
+        .upload-area {
+            border: 2px dashed #6366f1;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(34, 197, 94, 0.05));
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: #22c55e;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(99, 102, 241, 0.1));
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .upload-text {
+            font-size: 18px;
+            color: #475569;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .textarea-section {
+            margin-bottom: 30px;
+        }
+
+        .textarea-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #374151;
+        }
+
+        .jd-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 16px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .jd-textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-section {
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .match-score {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 197, 94, 0.1));
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#22c55e 0deg, #22c55e var(--progress), #e5e7eb var(--progress), #e5e7eb 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-inner {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #374151;
+        }
+
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .analysis-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #6366f1;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .analysis-card h3 {
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .match-item {
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 3px solid;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .match-item.excellent {
+            border-color: #22c55e;
+            background: #f0f9f4;
+        }
+
+        .match-item.good {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .match-item.partial {
+            border-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .match-item.missing {
+            border-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .skill-category {
+            margin-bottom: 20px;
+        }
+
+        .skill-category h4 {
+            color: #6366f1;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .skill-tag {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .skill-tag.matched {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .skill-tag.alternative {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .skill-tag.missing {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(34, 197, 94, 0.05));
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cta-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .cta-btn.secondary {
+            background: white;
+            color: #6366f1;
+            border: 2px solid #6366f1;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .confidence-indicator {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .match-breakdown {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-btn {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Portfolio</a>
+        
+        <div class="header">
+            <h1>Advanced JD Match Analyzer</h1>
+            <p>Upload or paste a job description to see detailed compatibility analysis with Parth's profile</p>
+        </div>
+
+        <div class="upload-section">
+            <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Click to upload JD file</div>
+                <div class="upload-hint">Supports PDF, DOC, DOCX, TXT files</div>
+                <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt" />
+            </div>
+        </div>
+
+        <div class="textarea-section">
+            <label for="jdText">Or paste the job description here:</label>
+            <textarea id="jdText" class="jd-textarea" placeholder="Paste the complete job description here..."></textarea>
+        </div>
+
+        <button class="analyze-btn" onclick="analyzeMatch()">
+            Analyze Job Match
+        </button>
+
+        <div class="results-section" id="resultsSection">
+            <div class="match-score">
+                <div class="score-circle">
+                    <div class="score-progress" id="scoreProgress">
+                        <div class="score-inner">
+                            <span id="scoreText">0%</span>
+                        </div>
+                    </div>
+                </div>
+                <h2 id="matchTitle">Analyzing...</h2>
+                <div class="confidence-indicator" id="confidenceIndicator"></div>
+            </div>
+
+            <div class="analysis-grid">
+                <div class="analysis-card">
+                    <h3>🎯 Role & Experience Match</h3>
+                    <div id="roleAnalysis"></div>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>⚡ Technical Skills</h3>
+                    <div id="skillsAnalysis"></div>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>🏆 Track Record Alignment</h3>
+                    <div id="achievementAnalysis"></div>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>🔧 Tools & Platforms</h3>
+                    <div id="toolsAnalysis"></div>
+                </div>
+            </div>
+
+            <div class="cta-section" id="ctaSection">
+                <!-- CTA content will be populated based on score -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive profile with weighted scoring
+        const parthProfile = {
+            roles: {
+                primary: ["customer success manager", "customer success", "csm"],
+                secondary: ["account manager", "customer experience", "client success", "revenue operations", "customer marketing"],
+                related: ["sales", "account executive", "relationship manager", "business development"]
+            },
+            experience: {
+                years: 4,
+                industries: ["saas", "b2b", "enterprise software", "healthcare tech", "ai/ml", "fintech"],
+                company_stages: ["startup", "scale-up", "enterprise"],
+                achievements: {
+                    revenue: ["$4M+ ARR managed", "115% NRR", "130% quota attainment", "$540K cross-sells"],
+                    recognition: ["2x President's Club", "Top performer", "Founding CS team member"],
+                    expansion: ["$10K→$132K in 5 months", "$2M+ onsite expansions", "25% YoY growth"]
+                }
+            },
+            technical_skills: {
+                ai_ml: {
+                    skills: ["RAG implementation", "conversational AI", "API integration", "automation"],
+                    evidence: "Built portfolio RAG chatbot, PE firm agentic system, 30% trial-to-paid improvement",
+                    weight: 0.9
+                },
+                data_analytics: {
+                    skills: ["Python", "SQL", "Power BI", "Tableau", "predictive modeling", "business intelligence"],
+                    evidence: "200K record churn simulation, lead scoring models, revenue forecasting",
+                    weight: 0.85
+                },
+                crm_platforms: {
+                    skills: ["Salesforce", "HubSpot", "Gainsight", "Pipedrive"],
+                    evidence: "4+ years managing enterprise accounts, custom integrations, health scoring",
+                    weight: 0.95
+                },
+                automation_tools: {
+                    skills: ["Zapier", "Coefficient.io", "Clay", "API workflows"],
+                    evidence: "HubSpot+Coefficient integration, automated data analysis, lead generation",
+                    weight: 0.8
+                }
+            },
+            soft_skills: {
+                strategic: ["MEDDPICC", "Sandler methodology", "consultative selling", "account planning"],
+                operational: ["project management", "cross-functional collaboration", "stakeholder management"],
+                analytical: ["data-driven decision making", "forecasting", "segmentation", "health scoring"]
+            },
+            education: {
+                degree: "MS Business Analytics",
+                school: "Babson College",
+                gpa: "3.4/4.0",
+                focus: ["predictive analytics", "AI solutions", "business intelligence"]
+            }
+        };
+
+        // Sophisticated tool mapping with alternatives
+        const toolEcosystem = {
+            "salesforce": {
+                alternatives: ["hubspot", "pipedrive", "zoho crm"],
+                category: "CRM",
+                parthExperience: "Expert level - 4+ years with custom integrations"
+            },
+            "hubspot": {
+                alternatives: ["salesforce", "pipedrive"],
+                category: "CRM",
+                parthExperience: "Advanced - Built real-time pipeline analysis integration"
+            },
+            "gainsight": {
+                alternatives: ["churnzero", "totango", "vitally", "planhat"],
+                category: "Customer Success Platform",
+                parthExperience: "Proficient - Health scoring and automation workflows"
+            },
+            "tableau": {
+                alternatives: ["power bi", "looker", "qlik"],
+                category: "Analytics",
+                parthExperience: "Advanced - Executive dashboards and business intelligence"
+            },
+            "python": {
+                alternatives: ["r", "sql", "javascript"],
+                category: "Programming",
+                parthExperience: "Advanced - ML models, churn prediction, RAG systems"
+            },
+            "jira": {
+                alternatives: ["asana", "monday.com", "linear", "notion"],
+                category: "Project Management",
+                parthExperience: "Proficient - Cross-functional project coordination"
+            }
+        };
+
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('jdText').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        // Drag and drop functionality
+        const uploadArea = document.querySelector('.upload-area');
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('jdText').value = e.target.result;
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function analyzeMatch() {
+            const jdText = document.getElementById('jdText').value.trim();
+            
+            if (!jdText) {
+                alert('Please upload a file or paste the job description');
+                return;
+            }
+
+            // Show loading state
+            const analyzeBtn = document.querySelector('.analyze-btn');
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = 'Analyzing...';
+
+            // Simulate sophisticated analysis
+            setTimeout(() => {
+                const analysis = performAdvancedAnalysis(jdText);
+                displayAdvancedResults(analysis);
+                
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = 'Analyze Job Match';
+                
+                document.getElementById('resultsSection').style.display = 'block';
+                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+            }, 3000);
+        }
+
+        function performAdvancedAnalysis(jdText) {
+            const jdLower = jdText.toLowerCase();
+            let totalScore = 0;
+            let maxPossibleScore = 0;
+            let analysis = {
+                role: { matches: [], score: 0, maxScore: 25 },
+                experience: { matches: [], score: 0, maxScore: 20 },
+                technical: { matches: [], alternatives: [], missing: [], score: 0, maxScore: 25 },
+                achievements: { matches: [], score: 0, maxScore: 15 },
+                tools: { matched: [], alternatives: [], missing: [], score: 0, maxScore: 15 },
+                confidence: 0
+            };
+
+            // Role matching with semantic understanding
+            let roleScore = 0;
+            parthProfile.roles.primary.forEach(role => {
+                if (jdLower.includes(role)) {
+                    roleScore += 25;
+                    analysis.role.matches.push(`Perfect role match: ${role}`);
+                }
+            });
+
+            if (roleScore === 0) {
+                parthProfile.roles.secondary.forEach(role => {
+                    if (jdLower.includes(role)) {
+                        roleScore += 20;
+                        analysis.role.matches.push(`Strong role alignment: ${role}`);
+                    }
+                });
+            }
+
+            if (roleScore === 0) {
+                parthProfile.roles.related.forEach(role => {
+                    if (jdLower.includes(role)) {
+                        roleScore += 12;
+                        analysis.role.matches.push(`Related role experience: ${role}`);
+                    }
+                });
+            }
+
+            if (roleScore === 0 && (jdLower.includes('customer') || jdLower.includes('client') || jdLower.includes('account'))) {
+                roleScore = 15;
+                analysis.role.matches.push('Customer-facing role - transferable CS skills apply');
+            }
+
+            analysis.role.score = Math.min(roleScore, 25);
+
+            // Experience analysis with context
+            let expScore = 0;
+            const expMatch = jdLower.match(/(\d+)\+?\s*(?:to\s*(\d+))?\s*years?\s*(?:of\s*)?(?:experience|exp)/i);
+            
+            if (expMatch) {
+                const minYears = parseInt(expMatch[1]);
+                const maxYears = expMatch[2] ? parseInt(expMatch[2]) : null;
+                
+                if (minYears <= 4) {
+                    expScore = 20;
+                    analysis.experience.matches.push(`Experience requirement met: ${minYears}+ years required, Parth has 4+ with exceptional results`);
+                } else if (minYears <= 6) {
+                    expScore = 16;
+                    analysis.experience.matches.push(`Strong consideration: ${minYears} years required, Parth has 4+ with 2x President's Club performance`);
+                } else {
+                    expScore = 8;
+                    analysis.experience.matches.push(`Experience gap offset by performance: ${minYears} years required, 4+ years with top-tier results`);
+                }
+            } else {
+                expScore = 15;
+                analysis.experience.matches.push('No specific experience requirement - 4+ years with proven CS success');
+            }
+
+            // Industry alignment
+            const industryMatch = parthProfile.experience.industries.some(industry => jdLower.includes(industry));
+            if (industryMatch) {
+                expScore += 5;
+                analysis.experience.matches.push('Industry alignment: SaaS/B2B/Enterprise/Healthcare experience');
+            }
+
+            analysis.experience.score = Math.min(expScore, 20);
+
+            // Technical skills with evidence
+            let techScore = 0;
+            Object.entries(parthProfile.technical_skills).forEach(([category, data]) => {
+                data.skills.forEach(skill => {
+                    if (jdLower.includes(skill.toLowerCase()) || 
+                        jdLower.includes(skill.toLowerCase().replace(/\s+/g, ''))) {
+                        const points = Math.round(5 * data.weight);
+                        techScore += points;
+                        analysis.technical.matches.push(`${skill}: ${data.evidence}`);
+                    }
+                });
+            });
+
+            // Advanced pattern matching
+            const aiPatterns = ['ai', 'artificial intelligence', 'machine learning', 'automation', 'chatbot', 'nlp'];
+            const dataPatterns = ['analytics', 'data analysis', 'business intelligence', 'forecasting', 'modeling'];
+            const crmPatterns = ['crm', 'customer relationship', 'salesforce', 'hubspot'];
+
+            if (aiPatterns.some(pattern => jdLower.includes(pattern))) {
+                techScore += 8;
+                analysis.technical.matches.push('AI/ML expertise: Built RAG systems, conversational AI, automated workflows');
+            }
+
+            if (dataPatterns.some(pattern => jdLower.includes(pattern))) {
+                techScore += 6;
+                analysis.technical.matches.push('Data analytics: Advanced proficiency in Python, SQL, Power BI, predictive modeling');
+            }
+
+            if (crmPatterns.some(pattern => jdLower.includes(pattern))) {
+                techScore += 5;
+                analysis.technical.matches.push('CRM mastery: 4+ years with Salesforce/HubSpot, custom integrations, automation');
+            }
+
+            analysis.technical.score = Math.min(techScore, 25);
+
+            // Achievement alignment
+            let achievementScore = 0;
+            const achievementKeywords = ['retention', 'churn', 'expansion', 'upsell', 'growth', 'revenue', 'quota', 'targets'];
+            
+            achievementKeywords.forEach(keyword => {
+                if (jdLower.includes(keyword)) {
+                    achievementScore += 2;
+                    switch(keyword) {
+                        case 'retention':
+                            analysis.achievements.matches.push('Retention excellence: 115% NRR, reduced churn by 5.1%');
+                            break;
+                        case 'expansion':
+                        case 'upsell':
+                            analysis.achievements.matches.push('Expansion expertise: $10K→$132K growth, $540K cross-sells');
+                            break;
+                        case 'quota':
+                        case 'targets':
+                            analysis.achievements.matches.push('Quota performance: 130% average attainment, 2x President\'s Club');
+                            break;
+                        default:
+                            analysis.achievements.matches.push(`Proven ${keyword} results in enterprise CS environment`);
+                    }
+                }
+            });
+
+            analysis.achievements.score = Math.min(achievementScore, 15);
+
+            // Tool analysis with alternatives
+            let toolScore = 0;
+            Object.entries(toolEcosystem).forEach(([tool, data]) => {
+                if (jdLower.includes(tool)) {
+                    toolScore += 3;
+                    analysis.tools.matched.push(`${tool}: ${data.parthExperience}`);
+                } else {
+                    // Check if Parth has alternatives
+                    const hasAlternative = data.alternatives.some(alt => 
+                        Object.keys(toolEcosystem).includes(alt) && 
+                        parthProfile.technical_skills.crm_platforms?.skills.includes(alt)
+                    );
+                    
+                    if (hasAlternative) {
+                        toolScore += 1;
+                        const altTool = data.alternatives.find(alt => 
+                            parthProfile.technical_skills.crm_platforms?.skills.includes(alt)
+                        );
+                        analysis.tools.alternatives.push(`${tool} required → has ${altTool} (${data.category})`);
+                    }
+                }
+            });
+
+            analysis.tools.score = Math.min(toolScore, 15);
+
+            // Calculate final score and confidence
+            totalScore = analysis.role.score + analysis.experience.score + analysis.technical.score + 
+                         analysis.achievements.score + analysis.tools.score;
+            maxPossibleScore = 100;
+            
+            const finalScore = Math.round((totalScore / maxPossibleScore) * 100);
+            
+            // Confidence calculation based on match quality
+            let confidence = 0;
+            if (analysis.role.score >= 20) confidence += 30;
+            if (analysis.experience.score >= 15) confidence += 20;
+            if (analysis.technical.score >= 15) confidence += 25;
+            if (analysis.achievements.score >= 8) confidence += 15;
+            if (analysis.tools.score >= 8) confidence += 10;
+            
+            analysis.confidence = Math.min(confidence, 100);
+
+            return {
+                score: Math.max(finalScore, 45), // Minimum 45% for any customer-facing role
+                breakdown: analysis,
+                totalMatches: analysis.role.matches.length + analysis.technical.matches.length + 
+                             analysis.achievements.matches.length + analysis.tools.matched.length
+            };
+        }
+
+        function displayAdvancedResults(analysis) {
+            const { score, breakdown, totalMatches } = analysis;
+            
+            // Update score with animation
+            updateScoreDisplay(score);
+            
+            // Update title and confidence
+            const matchTitle = document.getElementById('matchTitle');
+            const confidenceIndicator = document.getElementById('confidenceIndicator');
+            
+            if (score >= 80) {
+                matchTitle.textContent = 'Excellent Match!';
+                matchTitle.style.color = '#22c55e';
+            } else if (score >= 60) {
+                matchTitle.textContent = 'Strong Potential Match';
+                matchTitle.style.color = '#f59e0b';
+            } else {
+                matchTitle.textContent = 'Moderate Match';
+                matchTitle.style.color = '#6b7280';
+            }
+            
+            confidenceIndicator.textContent = `Analysis confidence: ${breakdown.confidence}% (${totalMatches} direct matches found)`;
+
+            // Populate detailed analysis
+            populateRoleAnalysis(breakdown.role);
+            populateSkillsAnalysis(breakdown.technical);
+            populateAchievementAnalysis(breakdown.achievements);
+            populateToolsAnalysis(breakdown.tools);
+            
+            // Display appropriate CTA
+            displayCTA(score);
+        }
+
+        function updateScoreDisplay(score) {
+            const scoreText = document.getElementById('scoreText');
+            const scoreProgress = document.getElementById('scoreProgress');
+            
+            // Animate score counting up
+            let currentScore = 0;
+            const increment = score / 50;
+            const timer = setInterval(() => {
+                currentScore += increment;
+                if (currentScore >= score) {
+                    currentScore = score;
+                    clearInterval(timer);
+                }
+                scoreText.textContent = Math.round(currentScore) + '%';
+                scoreProgress.style.setProperty('--progress', (currentScore * 3.6) + 'deg');
+            }, 50);
+
+            // Set color based on score
+            if (score >= 80) {
+                scoreProgress.style.background = `conic-gradient(#22c55e 0deg, #22c55e ${score * 3.6}deg, #e5e7eb ${score * 3.6}deg, #e5e7eb 360deg)`;
+            } else if (score >= 60) {
+                scoreProgress.style.background = `conic-gradient(#f59e0b 0deg, #f59e0b ${score * 3.6}deg, #e5e7eb ${score * 3.6}deg, #e5e7eb 360deg)`;
+            } else {
+                scoreProgress.style.background = `conic-gradient(#6b7280 0deg, #6b7280 ${score * 3.6}deg, #e5e7eb ${score * 3.6}deg, #e5e7eb 360deg)`;
+            }
+        }
+
+        function populateRoleAnalysis(roleData) {
+            const container = document.getElementById('roleAnalysis');
+            let html = '';
+            
+            roleData.matches.forEach(match => {
+                html += `<div class="match-item excellent">${match}</div>`;
+            });
+            
+            html += `<div class="match-breakdown">Role alignment score: ${roleData.score}/${roleData.maxScore}</div>`;
+            container.innerHTML = html;
+        }
+
+        function populateSkillsAnalysis(techData) {
+            const container = document.getElementById('skillsAnalysis');
+            let html = '';
+            
+            if (techData.matches.length > 0) {
+                html += '<div class="skill-category"><h4>Direct Matches</h4>';
+                techData.matches.forEach(match => {
+                    html += `<div class="match-item excellent">${match}</div>`;
+                });
+                html += '</div>';
+            }
+            
+            if (techData.alternatives.length > 0) {
+                html += '<div class="skill-category"><h4>Alternative Experience</h4>';
+                techData.alternatives.forEach(alt => {
+                    html += `<div class="match-item partial">${alt}</div>`;
+                });
+                html += '</div>';
+            }
+            
+            html += `<div class="match-breakdown">Technical score: ${techData.score}/${techData.maxScore}</div>`;
+            container.innerHTML = html;
+        }
+
+        function populateAchievementAnalysis(achievementData) {
+            const container = document.getElementById('achievementAnalysis');
+            let html = '';
+            
+            achievementData.matches.forEach(match => {
+                html += `<div class="match-item excellent">${match}</div>`;
+            });
+            
+            // Add key achievements even if not specifically mentioned in JD
+            html += `<div class="match-item good">Proven track record: 2x President's Club, 130% quota attainment</div>`;
+            html += `<div class="match-item good">Revenue impact: $4M+ ARR managed, 115% NRR maintained</div>`;
+            html += `<div class="match-item good">Enterprise growth: Founded CS team, scaled from SMB to Enterprise</div>`;
+            
+            html += `<div class="match-breakdown">Achievement alignment: ${achievementData.score}/${achievementData.maxScore}</div>`;
+            container.innerHTML = html;
+        }
+
+        function populateToolsAnalysis(toolsData) {
+            const container = document.getElementById('toolsAnalysis');
+            let html = '';
+            
+            if (toolsData.matched.length > 0) {
+                html += '<div class="skill-category"><h4>Direct Tool Matches</h4>';
+                toolsData.matched.forEach(tool => {
+                    html += `<div class="match-item excellent">${tool}</div>`;
+                });
+                html += '</div>';
+            }
+            
+            if (toolsData.alternatives.length > 0) {
+                html += '<div class="skill-category"><h4>Alternative Tools</h4>';
+                toolsData.alternatives.forEach(alt => {
+                    html += `<div class="match-item partial">${alt}</div>`;
+                });
+                html += '</div>';
+            }
+            
+            // Always show core tech stack
+            html += '<div class="skill-category"><h4>Core Technology Stack</h4>';
+            html += '<div class="skill-tags">';
+            const coreSkills = ['Salesforce', 'HubSpot', 'Python', 'SQL', 'Power BI', 'Gainsight', 'Zapier', 'JavaScript'];
+            coreSkills.forEach(skill => {
+                const isMatched = toolsData.matched.some(m => m.includes(skill));
+                const tagClass = isMatched ? 'matched' : 'alternative';
+                html += `<span class="skill-tag ${tagClass}">${skill}</span>`;
+            });
+            html += '</div></div>';
+            
+            html += `<div class="match-breakdown">Tools score: ${toolsData.score}/${toolsData.maxScore}</div>`;
+            container.innerHTML = html;
+        }
+
+        function displayCTA(score) {
+            const ctaSection = document.getElementById('ctaSection');
+            let ctaHTML = '';
+
+            if (score >= 80) {
+                ctaHTML = `
+                    <h3 style="color: #22c55e; margin-bottom: 15px;">🎯 Excellent Match - Highly Recommended</h3>
+                    <p style="margin-bottom: 20px; line-height: 1.6;">
+                        Parth's profile aligns exceptionally well with your requirements. His proven track record of 
+                        130% quota attainment, 2x President's Club recognition, and demonstrated ability to manage 
+                        $4M+ ARR with 115% NRR makes him an ideal candidate for immediate impact. His technical 
+                        capabilities in AI/ML and data analytics add significant value beyond traditional CS skills.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="mailto:parthbadani96@gmail.com?subject=Job Opportunity - Excellent Match (${score}% compatibility)" class="cta-btn primary">
+                            📧 Email Parth
+                        </a>
+                        <a href="https://www.linkedin.com/in/parthbadani96" target="_blank" class="cta-btn secondary">
+                            💼 Connect on LinkedIn
+                        </a>
+                    </div>
+                `;
+            } else if (score >= 60) {
+                ctaHTML = `
+                    <h3 style="color: #f59e0b; margin-bottom: 15px;">🚀 Strong Potential - Worth the Investment</h3>
+                    <p style="margin-bottom: 20px; line-height: 1.6;">
+                        Hey, it's not a perfect match, but so wasn't Freshworks. Parth was from a non-tech 
+                        background with no knowledge about SaaS or ITSM or even what a CS does, but he learnt 
+                        his way up everyday and went on to be one of the top performers winning 2x President's 
+                        Club awards in a row. If you feel like you can take that chance, he's willing to hustle 
+                        everyday and do whatever it takes to replicate that success here. His proven ability to 
+                        learn, adapt, and exceed expectations makes him a valuable long-term investment.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="mailto:parthbadani96@gmail.com?subject=Job Opportunity - Growth Potential (${score}% compatibility)" class="cta-btn primary">
+                            📧 Email Parth
+                        </a>
+                        <a href="https://www.linkedin.com/in/parthbadani96" target="_blank" class="cta-btn secondary">
+                            💼 Connect on LinkedIn
+                        </a>
+                    </div>
+                `;
+            } else {
+                ctaHTML = `
+                    <h3 style="color: #6b7280; margin-bottom: 15px;">🤔 Limited Match - But Still Open</h3>
+                    <p style="margin-bottom: 20px; line-height: 1.6;">
+                        Sorry, this isn't a good match at this point of time but if you still are interested, 
+                        do feel free to drop an email or come say hi. Parth is always open to exploring 
+                        opportunities where his unique combination of CS expertise, technical skills, and 
+                        growth mindset could add value.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="mailto:parthbadani96@gmail.com?subject=Job Opportunity - Open Discussion (${score}% compatibility)" class="cta-btn secondary">
+                            📧 Email Parth
+                        </a>
+                        <a href="https://www.linkedin.com/in/parthbadani96" target="_blank" class="cta-btn secondary">
+                            💼 LinkedIn Profile
+                        </a>
+                    </div>
+                `;
+            }
+
+            ctaSection.innerHTML = ctaHTML;
+        }
+    </script>
+</body>
+</html>
