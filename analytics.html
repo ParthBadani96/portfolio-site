@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visitor Analytics - Parth Badani</title>
+    <title>Portfolio Analytics - Parth Badani</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', -apple-system, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .dashboard {
             max-width: 1200px;
             margin: 0 auto;
@@ -26,51 +26,64 @@
             padding: 40px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
         }
-        
+
         h1 {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 30px;
         }
-        
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
         }
-        
+
         .stat-card {
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(34, 197, 94, 0.1));
             padding: 25px;
             border-radius: 15px;
             text-align: center;
         }
-        
+
         .stat-number {
             font-size: 36px;
             font-weight: bold;
             color: #6366f1;
         }
-        
+
         .stat-label {
             color: #64748b;
             margin-top: 10px;
         }
-        
+
         .visitors-table {
             background: white;
             border-radius: 15px;
             padding: 20px;
             overflow-x: auto;
+            margin-bottom: 20px;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         th {
             background: #f8fafc;
             padding: 12px;
@@ -78,12 +91,12 @@
             color: #64748b;
             font-weight: 600;
         }
-        
+
         td {
             padding: 12px;
             border-top: 1px solid #e5e7eb;
         }
-        
+
         .company-badge {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -92,97 +105,359 @@
             font-size: 12px;
             display: inline-block;
         }
-        
+
         .unknown {
             background: #94a3b8;
         }
-        
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #6366f1;
-            text-decoration: none;
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
             font-weight: 600;
+            margin-bottom: 20px;
         }
-        
-        .back-link:hover {
-            text-decoration: underline;
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .debug-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .warning {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="dashboard">
         <a href="index.html" class="back-link">← Back to Portfolio</a>
-        <h1>Visitor Analytics Dashboard</h1>
+        
+        <h1>Portfolio Analytics Dashboard</h1>
+        
+        <div class="warning">
+            <strong>Note:</strong> This is a client-side analytics demo. For production use, implement server-side tracking with tools like Google Analytics, Mixpanel, or custom backend analytics.
+        </div>
+
+        <button class="refresh-btn" onclick="refreshAnalytics()">🔄 Refresh Data</button>
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number" id="totalVisits">0</div>
-                <div class="stat-label">Total Visits</div>
+                <div class="stat-number" id="totalSessions">0</div>
+                <div class="stat-label">Total Sessions</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="uniqueVisitors">0</div>
-                <div class="stat-label">Unique Visitors</div>
+                <div class="stat-number" id="todaySessions">0</div>
+                <div class="stat-label">Today's Sessions</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="todayVisits">0</div>
-                <div class="stat-label">Today's Visits</div>
+                <div class="stat-number" id="uniqueLocations">0</div>
+                <div class="stat-label">Unique Locations</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="companies">0</div>
-                <div class="stat-label">Companies Identified</div>
+                <div class="stat-number" id="avgSessionTime">0s</div>
+                <div class="stat-label">Avg Session Time</div>
             </div>
         </div>
-        
+
         <div class="visitors-table">
-            <h2 style="margin-bottom: 20px;">Recent Visitors</h2>
+            <h2 style="margin-bottom: 20px;">Recent Sessions</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Time</th>
-                        <th>Company</th>
                         <th>Location</th>
-                        <th>Page Views</th>
-                        <th>Duration</th>
+                        <th>Organization</th>
+                        <th>Pages Viewed</th>
+                        <th>Session Duration</th>
                     </tr>
                 </thead>
-                <tbody id="visitorsList">
-                    <!-- Data will be populated here -->
+                <tbody id="sessionsList">
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #6b7280;">Loading analytics data...</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
+
+        <div class="debug-section">
+            <h3>Debug Information</h3>
+            <div id="debugInfo">Loading...</div>
+        </div>
     </div>
-    
+
     <script>
-        // Load analytics data from localStorage
-        function loadAnalytics() {
-            const analytics = JSON.parse(localStorage.getItem('portfolioAnalytics') || '{}');
-            
-            document.getElementById('totalVisits').textContent = analytics.totalVisits || 0;
-            document.getElementById('uniqueVisitors').textContent = analytics.uniqueVisitors || 0;
-            document.getElementById('todayVisits').textContent = analytics.todayVisits || 0;
-            document.getElementById('companies').textContent = Object.keys(analytics.companies || {}).length;
-            
-            // Load visitor list
-            const visitors = analytics.visitors || [];
-            const tbody = document.getElementById('visitorsList');
-            tbody.innerHTML = '';
-            
-            visitors.slice(-20).reverse().forEach(visitor => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${new Date(visitor.timestamp).toLocaleString()}</td>
-                    <td><span class="company-badge ${visitor.company === 'Unknown' ? 'unknown' : ''}">${visitor.company}</span></td>
-                    <td>${visitor.location}</td>
-                    <td>${visitor.pageViews}</td>
-                    <td>${visitor.duration}</td>
+        // Enhanced analytics with better tracking
+        class PortfolioAnalytics {
+            constructor() {
+                this.storageKey = 'portfolioAnalytics_v2';
+                this.sessionKey = 'currentSession_v2';
+                this.init();
+            }
+
+            init() {
+                this.trackSession();
+                this.updateDisplay();
+                this.startSessionTimer();
+            }
+
+            async trackSession() {
+                try {
+                    // Get current session data
+                    let currentSession = JSON.parse(sessionStorage.getItem(this.sessionKey) || 'null');
+                    
+                    if (!currentSession) {
+                        // New session - get location data
+                        const locationData = await this.getLocationData();
+                        
+                        currentSession = {
+                            id: this.generateSessionId(),
+                            startTime: Date.now(),
+                            lastActivity: Date.now(),
+                            pages: [window.location.pathname],
+                            location: locationData.location,
+                            organization: locationData.organization,
+                            country: locationData.country,
+                            ip: locationData.ip
+                        };
+                        
+                        sessionStorage.setItem(this.sessionKey, JSON.stringify(currentSession));
+                        
+                        // Save to persistent storage
+                        this.saveSession(currentSession);
+                    } else {
+                        // Update existing session
+                        currentSession.lastActivity = Date.now();
+                        if (!currentSession.pages.includes(window.location.pathname)) {
+                            currentSession.pages.push(window.location.pathname);
+                        }
+                        sessionStorage.setItem(this.sessionKey, JSON.stringify(currentSession));
+                        
+                        // Update in persistent storage
+                        this.updateSession(currentSession);
+                    }
+                } catch (error) {
+                    console.error('Analytics tracking error:', error);
+                    this.trackFallbackSession();
+                }
+            }
+
+            async getLocationData() {
+                try {
+                    // Try multiple IP services
+                    const services = [
+                        'https://ipapi.co/json/',
+                        'https://api.ipify.org?format=json',
+                        'https://httpbin.org/ip'
+                    ];
+                    
+                    for (let service of services) {
+                        try {
+                            const response = await fetch(service, { timeout: 5000 });
+                            const data = await response.json();
+                            
+                            return {
+                                location: `${data.city || 'Unknown'}, ${data.country_name || data.country || 'Unknown'}`,
+                                organization: data.org || 'Unknown Organization',
+                                country: data.country_name || data.country || 'Unknown',
+                                ip: data.ip || 'Unknown'
+                            };
+                        } catch (e) {
+                            continue; // Try next service
+                        }
+                    }
+                    
+                    throw new Error('All IP services failed');
+                } catch (error) {
+                    return {
+                        location: 'Unknown Location',
+                        organization: 'Unknown Organization',
+                        country: 'Unknown',
+                        ip: 'Unknown'
+                    };
+                }
+            }
+
+            trackFallbackSession() {
+                const fallbackSession = {
+                    id: this.generateSessionId(),
+                    startTime: Date.now(),
+                    lastActivity: Date.now(),
+                    pages: [window.location.pathname],
+                    location: 'Unknown Location',
+                    organization: 'Unknown Organization',
+                    country: 'Unknown',
+                    ip: 'Unknown'
+                };
+                
+                sessionStorage.setItem(this.sessionKey, JSON.stringify(fallbackSession));
+                this.saveSession(fallbackSession);
+            }
+
+            generateSessionId() {
+                return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            saveSession(session) {
+                let analytics = JSON.parse(localStorage.getItem(this.storageKey) || '{"sessions": [], "stats": {}}');
+                
+                if (!analytics.sessions) analytics.sessions = [];
+                if (!analytics.stats) analytics.stats = {};
+                
+                analytics.sessions.push({
+                    ...session,
+                    endTime: null // Will be updated when session ends
+                });
+                
+                // Keep only last 100 sessions
+                if (analytics.sessions.length > 100) {
+                    analytics.sessions = analytics.sessions.slice(-100);
+                }
+                
+                localStorage.setItem(this.storageKey, JSON.stringify(analytics));
+            }
+
+            updateSession(session) {
+                let analytics = JSON.parse(localStorage.getItem(this.storageKey) || '{"sessions": []}');
+                
+                const sessionIndex = analytics.sessions.findIndex(s => s.id === session.id);
+                if (sessionIndex !== -1) {
+                    analytics.sessions[sessionIndex] = {
+                        ...analytics.sessions[sessionIndex],
+                        ...session,
+                        duration: Date.now() - session.startTime
+                    };
+                    
+                    localStorage.setItem(this.storageKey, JSON.stringify(analytics));
+                }
+            }
+
+            startSessionTimer() {
+                // Update session activity every 30 seconds
+                setInterval(() => {
+                    const currentSession = JSON.parse(sessionStorage.getItem(this.sessionKey) || 'null');
+                    if (currentSession) {
+                        currentSession.lastActivity = Date.now();
+                        sessionStorage.setItem(this.sessionKey, JSON.stringify(currentSession));
+                        this.updateSession(currentSession);
+                    }
+                }, 30000);
+            }
+
+            updateDisplay() {
+                const analytics = JSON.parse(localStorage.getItem(this.storageKey) || '{"sessions": []}');
+                const sessions = analytics.sessions || [];
+                
+                // Calculate stats
+                const totalSessions = sessions.length;
+                const today = new Date().toDateString();
+                const todaySessions = sessions.filter(s => new Date(s.startTime).toDateString() === today).length;
+                
+                const uniqueLocations = new Set(sessions.map(s => s.location)).size;
+                const avgDuration = sessions.length > 0 
+                    ? Math.round(sessions.reduce((acc, s) => acc + (s.duration || 0), 0) / sessions.length / 1000)
+                    : 0;
+
+                // Update UI
+                document.getElementById('totalSessions').textContent = totalSessions;
+                document.getElementById('todaySessions').textContent = todaySessions;
+                document.getElementById('uniqueLocations').textContent = uniqueLocations;
+                document.getElementById('avgSessionTime').textContent = avgDuration + 's';
+
+                // Update sessions list
+                this.updateSessionsList(sessions);
+                
+                // Update debug info
+                this.updateDebugInfo(analytics);
+            }
+
+            updateSessionsList(sessions) {
+                const tbody = document.getElementById('sessionsList');
+                
+                if (sessions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #6b7280;">No sessions recorded yet</td></tr>';
+                    return;
+                }
+                
+                const recentSessions = sessions.slice(-20).reverse();
+                let html = '';
+                
+                recentSessions.forEach(session => {
+                    const startTime = new Date(session.startTime);
+                    const duration = session.duration ? Math.round(session.duration / 1000) + 's' : 'Active';
+                    const orgClass = session.organization === 'Unknown Organization' ? 'unknown' : '';
+                    
+                    html += `
+                        <tr>
+                            <td>${startTime.toLocaleString()}</td>
+                            <td>${session.location}</td>
+                            <td><span class="company-badge ${orgClass}">${session.organization}</span></td>
+                            <td>${session.pages.length}</td>
+                            <td>${duration}</td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = html;
+            }
+
+            updateDebugInfo(analytics) {
+                const debugInfo = document.getElementById('debugInfo');
+                const currentSession = JSON.parse(sessionStorage.getItem(this.sessionKey) || 'null');
+                
+                debugInfo.innerHTML = `
+                    <strong>Storage Key:</strong> ${this.storageKey}<br>
+                    <strong>Total Sessions in Storage:</strong> ${analytics.sessions?.length || 0}<br>
+                    <strong>Current Session ID:</strong> ${currentSession?.id || 'None'}<br>
+                    <strong>Current Session Start:</strong> ${currentSession ? new Date(currentSession.startTime).toLocaleString() : 'None'}<br>
+                    <strong>Pages in Current Session:</strong> ${currentSession?.pages?.join(', ') || 'None'}<br>
+                    <strong>Browser Storage Size:</strong> ${JSON.stringify(analytics).length} bytes<br>
+                    <strong>Last Update:</strong> ${new Date().toLocaleString()}
                 `;
-            });
+            }
+
+            clearData() {
+                if (confirm('Are you sure you want to clear all analytics data?')) {
+                    localStorage.removeItem(this.storageKey);
+                    sessionStorage.removeItem(this.sessionKey);
+                    this.updateDisplay();
+                }
+            }
         }
-        
-        // Refresh every 5 seconds
-        loadAnalytics();
-        setInterval(loadAnalytics, 5000);
+
+        // Initialize analytics
+        const analytics = new PortfolioAnalytics();
+
+        // Refresh function
+        function refreshAnalytics() {
+            analytics.updateDisplay();
+        }
+
+        // Auto-refresh every 60 seconds
+        setInterval(refreshAnalytics, 60000);
+
+        // Add clear data function for testing
+        function clearAnalytics() {
+            analytics.clearData();
+        }
+
+        // Expose for debugging
+        window.portfolioAnalytics = analytics;
+        window.clearAnalytics = clearAnalytics;
     </script>
 </body>
 </html>

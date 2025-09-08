@@ -1214,67 +1214,114 @@ function getLocalResponse(msg) {
             }
         });
 
-        // Visitor tracking
-        (async function trackVisitor() {
-            try {
-                const response = await fetch('https://ipapi.co/json/');
-                const data = await response.json();
+       // Replace your existing visitor tracking code with this enhanced version
+(async function initializeAnalytics() {
+    try {
+        // Initialize the analytics system
+        const analytics = new PortfolioAnalytics();
+        
+        // Track page view
+        analytics.trackPageView();
+        
+    } catch (error) {
+        console.log('Analytics initialization failed:', error);
+        // Fallback: simple counter
+        let visits = parseInt(localStorage.getItem('simpleVisitCounter') || '0');
+        visits++;
+        localStorage.setItem('simpleVisitCounter', visits.toString());
+    }
+})();
+
+// Simple analytics class for portfolio
+class PortfolioAnalytics {
+    constructor() {
+        this.storageKey = 'portfolioAnalytics_v2';
+        this.sessionKey = 'currentSession_v2';
+    }
+
+    async trackPageView() {
+        try {
+            let currentSession = JSON.parse(sessionStorage.getItem(this.sessionKey) || 'null');
+            
+            if (!currentSession) {
+                // New session
+                const locationData = await this.getLocationData();
                 
-                let visitorId = localStorage.getItem('visitorId');
-                if (!visitorId) {
-                    visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-                    localStorage.setItem('visitorId', visitorId);
+                currentSession = {
+                    id: this.generateSessionId(),
+                    startTime: Date.now(),
+                    lastActivity: Date.now(),
+                    pages: [window.location.pathname],
+                    location: locationData.location,
+                    organization: locationData.organization
+                };
+                
+                sessionStorage.setItem(this.sessionKey, JSON.stringify(currentSession));
+                this.saveSession(currentSession);
+            } else {
+                // Update existing session
+                currentSession.lastActivity = Date.now();
+                if (!currentSession.pages.includes(window.location.pathname)) {
+                    currentSession.pages.push(window.location.pathname);
                 }
-                
-                let analytics = JSON.parse(localStorage.getItem('portfolioAnalytics') || '{}');
-                
-                if (!analytics.visitors) analytics.visitors = [];
-                if (!analytics.companies) analytics.companies = {};
-                if (!analytics.uniqueVisitors) analytics.uniqueVisitors = 0;
-                if (!analytics.totalVisits) analytics.totalVisits = 0;
-                if (!analytics.todayVisits) analytics.todayVisits = 0;
-                
-                const now = new Date();
-                const today = now.toDateString();
-                
-                if (analytics.lastVisitDate !== today) {
-                    analytics.todayVisits = 0;
-                    analytics.lastVisitDate = today;
-                }
-                
-                const company = data.org || 'Unknown';
-                const location = `${data.city || 'Unknown'}, ${data.country_name || 'Unknown'}`;
-                
-                analytics.visitors.push({
-                    id: visitorId,
-                    timestamp: now.toISOString(),
-                    company: company,
-                    location: location,
-                    ip: data.ip,
-                    pageViews: 1,
-                    duration: '< 1 min'
-                });
-                
-                analytics.totalVisits++;
-                analytics.todayVisits++;
-                if (!analytics.uniqueIds) analytics.uniqueIds = new Set();
-                analytics.uniqueIds.add(visitorId);
-                analytics.uniqueVisitors = analytics.uniqueIds.size;
-                
-                if (company !== 'Unknown') {
-                    analytics.companies[company] = (analytics.companies[company] || 0) + 1;
-                }
-                
-                if (analytics.visitors.length > 100) {
-                    analytics.visitors = analytics.visitors.slice(-100);
-                }
-                
-                localStorage.setItem('portfolioAnalytics', JSON.stringify(analytics));
-                
-            } catch (error) {
-                console.log('Analytics tracking failed:', error);
+                sessionStorage.setItem(this.sessionKey, JSON.stringify(currentSession));
+                this.updateSession(currentSession);
             }
-        })();
+        } catch (error) {
+            console.log('Page view tracking failed:', error);
+        }
+    }
+
+    async getLocationData() {
+        try {
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+            
+            return {
+                location: `${data.city || 'Unknown'}, ${data.country_name || 'Unknown'}`,
+                organization: data.org || 'Unknown Organization'
+            };
+        } catch (error) {
+            return {
+                location: 'Unknown Location',
+                organization: 'Unknown Organization'
+            };
+        }
+    }
+
+    generateSessionId() {
+        return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    saveSession(session) {
+        let analytics = JSON.parse(localStorage.getItem(this.storageKey) || '{"sessions": []}');
+        
+        if (!analytics.sessions) analytics.sessions = [];
+        
+        analytics.sessions.push(session);
+        
+        if (analytics.sessions.length > 100) {
+            analytics.sessions = analytics.sessions.slice(-100);
+        }
+        
+        localStorage.setItem(this.storageKey, JSON.stringify(analytics));
+    }
+
+    updateSession(session) {
+        let analytics = JSON.parse(localStorage.getItem(this.storageKey) || '{"sessions": []}');
+        
+        const sessionIndex = analytics.sessions.findIndex(s => s.id === session.id);
+        if (sessionIndex !== -1) {
+            analytics.sessions[sessionIndex] = {
+                ...analytics.sessions[sessionIndex],
+                ...session,
+                duration: Date.now() - session.startTime
+            };
+            
+            localStorage.setItem(this.storageKey, JSON.stringify(analytics));
+        }
+    }
+}
 
         // Show analytics link only for admin
         // Show admin links only for you
