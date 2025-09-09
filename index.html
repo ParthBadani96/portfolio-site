@@ -1035,16 +1035,22 @@
         <div class="chatbot-toggle" onclick="toggleChatbot()">💬</div>
         <div class="chatbot-window" id="chatbotWindow">
             <div class="chatbot-header">
-                <span>Chat with Parth's AI</span>
-                <button onclick="toggleChatbot()" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;">✖</button>
-            </div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <span>Chat with Parth's AI</span>
+        <button onclick="toggleAutoSpeak()" id="autoSpeakBtn" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 6px; border-radius: 50%; cursor: pointer; width: 28px; height: 28px;" title="Toggle Auto-Speak">🔊</button>
+    </div>
+    <button onclick="toggleChatbot()" style="background:none;border:none;color:white;font-size:20px;cursor:pointer;">✖</button>
+    </div>
             <div class="chatbot-messages" id="chatbotMessages">
                 <div class="chat-message bot">👋 Do you want to know more about Parth?</div>
             </div>
             <div class="chatbot-input">
-                <input type="text" id="chatInput" placeholder="Type your message..." />
-                <button onclick="sendMessage()">Send</button>
+                <div style="flex: 1; position: relative;">
+                <input type="text" id="chatInput" placeholder="Type your message or click mic..." />
+                <button class="voice-btn" onclick="startVoiceInput()" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: #6366f1; color: white; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px;">🎤</button>
             </div>
+    <button onclick="sendMessage()">Send</button>
+</div>
         </div>
     </div>
 
@@ -1088,95 +1094,263 @@
         // Local response function
         // Enhanced function that checks custom knowledge first
 function getLocalResponse(msg) {
-    // First check custom knowledge
-    const customKnowledge = JSON.parse(localStorage.getItem('customKnowledge') || '{}');
-    
-    // Check if any custom knowledge matches
-    for (const [id, item] of Object.entries(customKnowledge)) {
-        const matchFound = item.keywords.some(keyword => 
-            msg.toLowerCase().includes(keyword.toLowerCase())
-        );
-        
-        if (matchFound) {
-            return `💡 ${item.content}`;
-        }
-    }
-    
-    // Fallback to existing pattern matching
-    let cleaned = msg.toLowerCase()
-        .replace(/tell me about|his|her|the|please|can you|give me|more about/g, "")
-        .trim();
+    let cleaned = msg.toLowerCase().replace(/tell me about|his|her|the|please|can you|give me|more about/g, "").trim();
 
     if (/hi|hello|hey/i.test(cleaned)) {
-        return "👋 Hi! I'm Parth's AI. You can ask me about his education, experience, projects, wins, resume, contact info, skills, or hobbies.";
+        return "👋 Hi! I'm Parth's AI assistant. You can ask about his Customer Success wins, technical projects, AI systems he's built, or specific achievements. What interests you?";
     }
-    // ... rest of your existing responses
+    else if (/education|school|college|study|degree|babson/i.test(cleaned)) {
+        return "🎓 MS Business Analytics from Babson College (2023-2024, GPA 3.4). Capstone: Built agentic RAG system for PE consulting firm, automating 60% of manual processes. Focus on predictive analytics and AI solutions.";
+    }
+    else if (/vosyn|intern|current|now/i.test(cleaned)) {
+        return "💡 At Vosyn AI (2024-present), Parth improved trial-to-paid conversion by 30%, designed automated adoption frameworks, achieved 92% CSAT during beta.";
+    }
+    else if (/freshworks|experience|csm|career|president|club/i.test(cleaned)) {
+        return "📈 At Freshworks (2020-2022): Managed $4M+ ARR, 2x Presidents Club, built FSM module ($540K cross-sells), expanded Thirty Madison $10K→$132K in 5 months. Founded CS team, scaled from 2000 to strategic 200-account portfolio.";
+    }
+    else if (/win|churn|retention|expansion|deal|displace|achievement|success/i.test(cleaned)) {
+        return "🏆 Key wins: Saved $40K healthcare client from churn → grew to $125K. Expanded Thirty Madison from $10K→$132K in 5 months. Consistently 115%+ NRR. Won President's Club twice through 130% quota attainment and strategic displacement plays against ServiceNow.";
+    }
+    else if (/project|forecast|lead|pipeline|churn/i.test(cleaned)) {
+        return "📂 Projects: 1) SaaS churn forecasting (200K records, Python, Power BI) 2) Lead scoring ML model 3) CRM pipeline analysis with HubSpot+Coefficient 4) This AI portfolio with RAG chatbot 5) PE firm agentic system automating 60% of workflows.";
+    }
+    else if (/resume|cv|download/i.test(cleaned)) {
+        return "📄 You can download Parth's full resume from the Resume tab above.";
+    }
+    else if (/contact|email|linkedin|github|phone/i.test(cleaned)) {
+        return "📬 Reach Parth at: Email: parthbadani96@gmail.com | LinkedIn: linkedin.com/in/parthbadani96 | GitHub: github.com/ParthBadani96";
+    }
+    else if (/skills|tools|stack|tech|technology|technical/i.test(cleaned)) {
+        return "🛠 Technical: Python, SQL, JavaScript, Power BI, Salesforce, HubSpot, Gainsight. Built RAG chatbots, churn prediction models, automated workflows. This portfolio demonstrates full-stack capabilities with AI integration.";
+    }
+    else if (/soccer|football|boxing|dance|hike|beer|hobbies|outside/i.test(cleaned)) {
+        return "⚽ Outside work: Parth plays soccer, boxes, dances, hikes, and enjoys craft beer 🍺.";
+    }
     else {
-        return "🤖 I can help you learn about Parth's education, experience, projects, wins, or skills. What would you like to know?";
+        return "🤖 I can share details about Parth's CS wins, technical skills, AI projects, or specific achievements. Try asking about 'wins', 'Freshworks experience', or 'technical skills'.";
     }
 }
-        // Send message function
-        async function sendMessage() {
-            const input = document.getElementById("chatInput");
-            let msg = input.value.trim();
-            if (!msg) return;
+         // Enhanced Voice System
+class VoiceManager {
+    constructor() {
+        this.isListening = false;
+        this.isSpeaking = false;
+        this.recognition = null;
+        this.synthesis = window.speechSynthesis;
+        this.autoSpeakEnabled = false;
+        this.initializeVoice();
+    }
 
-            const messages = document.getElementById("chatbotMessages");
+    initializeVoice() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            this.recognition = new SpeechRecognition();
+            this.recognition.continuous = false;
+            this.recognition.interimResults = false;
+            this.recognition.lang = 'en-US';
 
-            // User message
-            const userDiv = document.createElement("div");
-            userDiv.className = "chat-message user";
-            userDiv.textContent = msg;
-            messages.appendChild(userDiv);
+            this.recognition.onstart = () => {
+                this.isListening = true;
+                this.updateVoiceButton('listening');
+            };
 
-            // Bot response
-            const botDiv = document.createElement("div");
-            botDiv.className = "chat-message bot";
-            
-            // Check if running locally
-            const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-            
-            if (isLocal) {
-                // LOCAL TESTING - Just use pattern matching
-                botDiv.textContent = getLocalResponse(msg) + " [LOCAL MODE - Deploy to Netlify for AI]";
-                messages.appendChild(botDiv);
-            } else {
-                // DEPLOYED VERSION - Try API
-                const useAPI = apiCallsToday < 50;
-                
-                if (useAPI) {
-                    botDiv.textContent = "🤔 Thinking...";
-                    messages.appendChild(botDiv);
-                    
-                    try {
-                        const response = await fetch('/.netlify/functions/chat', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ message: msg })
-                        });
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            botDiv.textContent = data.response;
-                            apiCallsToday++;
-                            localStorage.setItem('apiCalls', apiCallsToday.toString());
-                        } else {
-                            throw new Error('Function returned: ' + response.status);
-                        }
-                    } catch (error) {
-                        botDiv.textContent = getLocalResponse(msg) + " [API Error - Check Netlify Functions]";
-                        console.error('API Error:', error);
-                    }
-                } else {
-                    botDiv.textContent = getLocalResponse(msg) + " [API Limit Reached]";
-                    messages.appendChild(botDiv);
-                }
-            }
-            
-            input.value = "";
-            messages.scrollTop = messages.scrollHeight;
+            this.recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('chatInput').value = transcript;
+                this.isListening = false;
+                this.updateVoiceButton('idle');
+                // Auto-send after voice input
+                setTimeout(() => sendMessage(), 500);
+            };
+
+            this.recognition.onend = () => {
+                this.isListening = false;
+                this.updateVoiceButton('idle');
+            };
+
+            this.recognition.onerror = () => {
+                this.isListening = false;
+                this.updateVoiceButton('idle');
+            };
+        }
+    }
+
+    updateVoiceButton(state) {
+        const voiceBtn = document.querySelector('.voice-btn');
+        if (!voiceBtn) return;
+
+        switch(state) {
+            case 'listening':
+                voiceBtn.style.background = '#ef4444';
+                voiceBtn.textContent = '🔴';
+                voiceBtn.style.animation = 'pulse 1s infinite';
+                break;
+            case 'speaking':
+                voiceBtn.style.background = '#f59e0b';
+                voiceBtn.textContent = '🔊';
+                voiceBtn.style.animation = 'pulse 1s infinite';
+                break;
+            default:
+                voiceBtn.style.background = '#6366f1';
+                voiceBtn.textContent = '🎤';
+                voiceBtn.style.animation = 'none';
+        }
+    }
+
+    startListening() {
+        if (this.recognition && !this.isListening) {
+            this.recognition.start();
+        }
+    }
+
+    speak(text) {
+        if (!this.synthesis) return;
+
+        if (this.isSpeaking) {
+            this.synthesis.cancel();
+            this.isSpeaking = false;
+            this.updateVoiceButton('idle');
+            return;
         }
 
+        const cleanText = text.replace(/[🎤🔊👋💡🤖📈📊🏆📂📄📬🛠⚽]/g, '').trim();
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        utterance.volume = 0.8;
+
+        // Use better voice if available
+        const voices = this.synthesis.getVoices();
+        const preferredVoice = voices.find(voice => 
+            voice.name.includes('Google') || 
+            voice.name.includes('Microsoft') ||
+            voice.lang.includes('en-US')
+        );
+        if (preferredVoice) {
+            utterance.voice = preferredVoice;
+        }
+
+        utterance.onstart = () => {
+            this.isSpeaking = true;
+            this.updateVoiceButton('speaking');
+        };
+
+        utterance.onend = () => {
+            this.isSpeaking = false;
+            this.updateVoiceButton('idle');
+        };
+
+        this.synthesis.speak(utterance);
+    }
+
+    toggleAutoSpeak() {
+        this.autoSpeakEnabled = !this.autoSpeakEnabled;
+        return this.autoSpeakEnabled;
+    }
+}
+
+// Initialize voice manager
+const voiceManager = new VoiceManager();
+
+// Update your existing functions
+function startVoiceInput() {
+    voiceManager.startListening();
+}
+
+function speakText(text) {
+    voiceManager.speak(text);
+}
+        function toggleAutoSpeak() {
+    const isEnabled = voiceManager.toggleAutoSpeak();
+    const btn = document.getElementById('autoSpeakBtn');
+    btn.style.background = isEnabled ? 'rgba(34, 197, 94, 0.3)' : 'rgba(255,255,255,0.2)';
+    btn.title = isEnabled ? 'Auto-speak enabled' : 'Auto-speak disabled';
+}
+        async function sendMessage() {
+    const input = document.getElementById("chatInput");
+    let msg = input.value.trim();
+    if (!msg) return;
+
+    const messages = document.getElementById("chatbotMessages");
+
+    // User message
+    const userDiv = document.createElement("div");
+    userDiv.className = "chat-message user";
+    userDiv.textContent = msg;
+    messages.appendChild(userDiv);
+
+    // Bot response
+    const botDiv = document.createElement("div");
+    botDiv.className = "chat-message bot";
+
+    // Check if running locally - FORCE LOCAL MODE for VS Code testing
+    const isLocal = window.location.hostname === 'localhost' || 
+                   window.location.hostname === '127.0.0.1' ||
+                   window.location.protocol === 'file:';
+
+    let responseText;
+
+    if (isLocal) {
+        // LOCAL MODE - Use enhanced local responses only
+        responseText = getLocalResponse(msg);
+    } else {
+        // DEPLOYED MODE - Try API first, fallback to local
+        const useAPI = apiCallsToday < 50;
+        
+        if (useAPI) {
+            botDiv.textContent = "🤔 Thinking...";
+            messages.appendChild(botDiv);
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    responseText = data.response;
+                    apiCallsToday++;
+                    localStorage.setItem('apiCalls', apiCallsToday.toString());
+                } else {
+                    throw new Error('API Error');
+                }
+            } catch (error) {
+                responseText = getLocalResponse(msg) + " [API Error]";
+            }
+        } else {
+            responseText = getLocalResponse(msg) + " [API Limit Reached]";
+        }
+    }
+
+    // Add response with speak button
+    botDiv.innerHTML = `
+        ${responseText}
+        <button onclick="speakText('${responseText.replace(/'/g, "\\'")}');" 
+                style="background: rgba(99,102,241,0.1); border: none; padding: 4px 8px; 
+                       border-radius: 12px; font-size: 12px; cursor: pointer; margin-left: 8px;">🔊</button>
+    `;
+    
+    // Only append if not already appended (for local mode)
+    if (isLocal) {
+        messages.appendChild(botDiv);
+    }
+
+    // Add to conversation memory if available
+    if (typeof conversationMemory !== 'undefined') {
+        conversationMemory.addExchange(msg, responseText);
+    }
+
+    // Auto-speak if enabled
+    if (typeof voiceManager !== 'undefined' && voiceManager.autoSpeakEnabled) {
+        setTimeout(() => voiceManager.speak(responseText), 500);
+    }
+
+    input.value = "";
+    messages.scrollTop = messages.scrollHeight;
+}
         // Allow Enter key to send message
         document.getElementById('chatInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
