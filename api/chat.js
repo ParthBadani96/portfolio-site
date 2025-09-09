@@ -14,8 +14,21 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message } = req.body;
+    const { message, customKnowledge } = req.body;
 
+// Check custom knowledge first if provided
+if (customKnowledge) {
+  for (const [id, item] of Object.entries(customKnowledge)) {
+    const matchFound = item.keywords.some(keyword => 
+      message.toLowerCase().includes(keyword.toLowerCase())
+    );
+    if (matchFound) {
+      return res.status(200).json({
+        response: `💡 ${item.content}`
+      });
+    }
+  }
+}
     const knowledgeBase = {
       experience: {
         freshworks: "At Freshworks (2020-2022): Managed $4M+ ARR portfolio of 100+ MM & enterprise accounts across MEA & NAMER. Achieved 25% YoY expansion, 130%+ quota attainment, 2x Presidents Club. Built Field Service Management module by translating customer feedback into product features, resulting in $540K cross-sells. Expanded Thirty Madison from $10K to $132K ACV in 5 months by displacing ServiceNow and Monday.com.",

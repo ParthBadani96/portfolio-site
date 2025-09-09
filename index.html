@@ -1303,11 +1303,16 @@ function speakText(text) {
             messages.appendChild(botDiv);
             
             try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: msg })
-                });
+                const customKnowledge = JSON.parse(localStorage.getItem('customKnowledge') || '{}');
+
+const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+        message: msg,
+        customKnowledge: customKnowledge 
+    })
+});
                 
                 if (response.ok) {
                     const data = await response.json();
