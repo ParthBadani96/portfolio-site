@@ -1515,52 +1515,29 @@ class PortfolioAnalytics {
 <!-- Vapi Voice AI Assistant -->
 <!-- Vapi Voice AI Assistant -->
 <!-- Vapi Voice AI Assistant -->
-<script>
-  var vapiInstance = null;
-  const assistant = "5f1e4765-b2d7-4798-8dae-8bb89b2c87f2";
-  const apiKey = "70fe3bbe-34af-48d3-b3ce-3d8bd48dd8ba";
-  const buttonConfig = {
-    position: "bottom-left",
-    offset: "40px",
-    width: "60px",
-    height: "60px",
-    idle: {
-      color: `rgb(76, 175, 80)`,
-      type: "pill",
-      title: "Talk to AI",
-      subtitle: "Voice enabled",
-      icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone.svg`,
-    },
-    loading: {
-      color: `rgb(76, 175, 80)`,
-      type: "pill",
-      title: "Connecting...",
-      subtitle: "Please wait",
-      icon: `https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg`,
-    },
-    active: {
-      color: `rgb(239, 68, 68)`,
-      type: "pill",
-      title: "Call Active",
-      subtitle: "End call",
-      icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone-off.svg`,
-    },
-  };
-  (function (d, t) {
-    var g = document.createElement(t),
-      s = d.getElementsByTagName(t)[0];
-    g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
-    g.defer = true;
-    g.async = true;
-    s.parentNode.insertBefore(g, s);
-    g.onload = function () {
-      vapiInstance = window.vapiSDK.run({
-        apiKey: apiKey,
-        assistant: assistant,
-        config: buttonConfig,
-      });
-    };
-  })(document, "script");
-</script>
+<vapi-widget
+  public-key="70fe3bbe-34af-48d3-b3ce-3d8bd48dd8ba"
+  assistant-id="5f1e4765-b2d7-4798-8dae-8bb89b2c87f2"
+  mode="voice"
+  theme="dark"
+  base-bg-color="#000000"
+  accent-color="#14B8A6"
+  cta-button-color="#000000"
+  cta-button-text-color="#ffffff"
+  border-radius="large"
+  size="full"
+  position="bottom-left"
+  title="TALK WITH AI"
+  start-button-text="Start"
+  end-button-text="End Call"
+  chat-first-message="Hey, How can I help you today?"
+  chat-placeholder="Type your message..."
+  voice-show-transcript="true"
+  consent-required="true"
+  consent-title="Terms and conditions"
+  consent-content="By clicking "Agree," and each time I interact with this AI agent, I consent to the recording, storage, and sharing of my communications with third-party service providers, and as otherwise described in our Terms of Service."
+  consent-storage-key="vapi_widget_consent"
+></vapi-widget>
+<script src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js" async type="text/javascript"></script>
 </body>
 </html>
