@@ -1512,16 +1512,19 @@ class PortfolioAnalytics {
 
     
     <!-- Vapi AI Assistant Widget -->
+<!-- Vapi Voice AI Assistant -->
 <vapi-widget 
-      assistant-id="5f1e4765-b2d7-4798-8dae-8bb89b2c87f2" 
-      public-key="70fe3bbe-34af-48d3-b3ce-3d8bd48dd8ba"
-      button-color="#4CAF50"
-      button-position="bottom-left"
-    ></vapi-widget>
-    <script
-      src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js"
-      async
-      type="text/javascript"
-    ></script>
+  assistant-id="5f1e4765-b2d7-4798-8dae-8bb89b2c87f2" 
+  public-key="70fe3bbe-34af-48d3-b3ce-3d8bd48dd8ba"
+  button-color="#4CAF50"
+  button-position="bottom-left"
+  call-mode="voice"
+  show-public-key-in-ui="false"
+></vapi-widget>
+<script
+  src="https://unpkg.com/@vapi-ai/web@latest"
+  async
+  type="text/javascript"
+></script>
 </body>
 </html>
