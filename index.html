@@ -1514,15 +1514,53 @@ class PortfolioAnalytics {
     <!-- Vapi AI Assistant Widget -->
 <!-- Vapi Voice AI Assistant -->
 <!-- Vapi Voice AI Assistant -->
-<vapi-widget 
-  assistant-id="5f1e4765-b2d7-4798-8dae-8bb89b2c87f2" 
-  public-key="70fe3bbe-34af-48d3-b3ce-3d8bd48dd8ba"
-  call-mode="voice"
-></vapi-widget>
-<script
-  src="https://unpkg.com/@vapi-ai/client-sdk-react/dist/embed/widget.umd.js"
-  async
-  type="text/javascript"
-></script>
+<!-- Vapi Voice AI Assistant -->
+<script>
+  var vapiInstance = null;
+  const assistant = "5f1e4765-b2d7-4798-8dae-8bb89b2c87f2";
+  const apiKey = "70fe3bbe-34af-48d3-b3ce-3d8bd48dd8ba";
+  const buttonConfig = {
+    position: "bottom-left",
+    offset: "40px",
+    width: "60px",
+    height: "60px",
+    idle: {
+      color: `rgb(76, 175, 80)`,
+      type: "pill",
+      title: "Talk to AI",
+      subtitle: "Voice enabled",
+      icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone.svg`,
+    },
+    loading: {
+      color: `rgb(76, 175, 80)`,
+      type: "pill",
+      title: "Connecting...",
+      subtitle: "Please wait",
+      icon: `https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg`,
+    },
+    active: {
+      color: `rgb(239, 68, 68)`,
+      type: "pill",
+      title: "Call Active",
+      subtitle: "End call",
+      icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone-off.svg`,
+    },
+  };
+  (function (d, t) {
+    var g = document.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    g.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js";
+    g.defer = true;
+    g.async = true;
+    s.parentNode.insertBefore(g, s);
+    g.onload = function () {
+      vapiInstance = window.vapiSDK.run({
+        apiKey: apiKey,
+        assistant: assistant,
+        config: buttonConfig,
+      });
+    };
+  })(document, "script");
+</script>
 </body>
 </html>
